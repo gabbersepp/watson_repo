@@ -7,6 +7,22 @@ namespace WebApplication1.ApiModel
         public List<WatsonAIntent> intents;
         public List<WatsonAEntity> entities;
         public WatsonAOutput output;
+        public WatsonAMessageInput input;
+        public WatsonAContext context;
+    }
+
+    public class WatsonASystem
+    {
+
+    }
+
+    public class WatsonAContext : Dictionary<string, object>
+    {
+        //public WatsonASystem system;
+    }
+    public class WatsonAMessageInput
+    {
+        public string text;
     }
 
     public class WatsonAOutput
@@ -19,6 +35,11 @@ namespace WebApplication1.ApiModel
         public string entity;
         public double confidence;
         public string value;
+
+        public override bool Equals(object obj)
+        {
+            return entity == ((WatsonAEntity) obj).entity;
+        }
     }
 
     public class WatsonAIntent

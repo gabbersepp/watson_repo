@@ -37,11 +37,11 @@ Messages.prototype.send = function() {
 
 Messages.prototype.processAgentResponse = function(data) {
 
-    if(data.result.fulfillment && data.result.fulfillment.speech) {
-        this.addAgent(data.result.fulfillment.speech);
+    if(data.output && data.output.text) {
+        this.addAgent(data.output.text);
     }
-    if(data.result.fulfillment && data.result.fulfillment.dialog) {
-        this.handleDisplayOfDialog(data.result.fulfillment.dialog);
+    if(data.output && data.output.dialog) {
+        this.handleDisplayOfDialog(data.output.dialog);
     }
 
 };
@@ -63,7 +63,7 @@ function Bot() {
 Bot.prototype.send = function(text, sessionId, callback) {
     $.ajax({
         type: "POST",
-        url: "http://localhost:5001/api/bot/SendQuery",
+        url: "http://localhost:5001/api/watson/Query",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify({text: text, sessionId: sessionId}),
