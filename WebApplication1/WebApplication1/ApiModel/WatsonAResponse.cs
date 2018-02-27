@@ -28,8 +28,16 @@ namespace WebApplication1.ApiModel
     public class WatsonAOutput
     {
         public List<string> text;
-
+        public List<string> nodes_visited;
+        public List<WatsonANodesVisitedDetails> nodes_visited_details;
     }
+
+    public class WatsonANodesVisitedDetails
+    {
+        public string dialog_node;
+        public string title;
+    }
+
     public class WatsonAEntity
     {
         public string entity;

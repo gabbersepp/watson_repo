@@ -14,7 +14,7 @@ namespace WebApplication1
         public WatsonAResponse Query(string text, List<WatsonAIntent> intents, List<WatsonAEntity> entities)
         {
             var client = new RestClient(baseUrl);
-            var request = new RestRequest("v1/workspaces/649ef879-4c2d-4d7a-93c5-3a456c060f52/message?version=2018-02-16", Method.POST);
+            var request = new RestRequest("v1/workspaces/649ef879-4c2d-4d7a-93c5-3a456c060f52/message?version=2018-02-16&nodes_visited_details=true", Method.POST);
             request.AddHeader("Authorization", "Basic " + Base64Encode(username));
 
             if (intents == null)

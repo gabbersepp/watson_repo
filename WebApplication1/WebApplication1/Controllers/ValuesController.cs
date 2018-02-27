@@ -121,6 +121,23 @@ namespace WebApplication1.Controllers
                     result.output.text = new List<string> { "Machen Sie dies und jenes um ihr Passwort zurückzusetzen" };
                 }
             }
+
+            if (result.intents[0].intent == "conversation.end")
+            {
+                result.context["dialog"] = new Dialog().AddTextPanel("Konnte ich Ihnen helfen?", "p1").AddButton("Ja", "yes").AddButton("Nein", "no").AddTextInput("reason");
+            }
+
+            var possibleKey = result.output
+                .nodes_visited_details[result.output.nodes_visited_details.Count - 1].title;
+
+            if (possibleKey != null && TranslationRepository.Instance.ContainsKey(possibleKey))
+            {
+                result.output.text = new List<string>
+                {
+                    TranslationRepository.Instance[result.output
+                        .nodes_visited_details[result.output.nodes_visited_details.Count - 1].title]
+                };
+            }
             return result;
         }
 

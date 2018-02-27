@@ -40,8 +40,8 @@ Messages.prototype.processAgentResponse = function(data) {
     if(data.output && data.output.text) {
         this.addAgent(data.output.text);
     }
-    if(data.output && data.output.dialog) {
-        this.handleDisplayOfDialog(data.output.dialog);
+    if(data.context && data.context.dialog) {
+        this.handleDisplayOfDialog(data.context.dialog);
     }
 
 };
