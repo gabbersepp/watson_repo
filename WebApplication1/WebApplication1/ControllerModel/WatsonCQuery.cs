@@ -4,5 +4,6 @@
     {
         public string Text;
         public string SessionId;
+        public string PressedButton;
     }
 }

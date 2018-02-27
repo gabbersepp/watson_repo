@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
             // wir müsen zuerst prüfen, ob der ankommende text ein neuer Intent ist
             var result = new WatsonProvider().Query(query.Text, null, null);
 
-            if (data != null && result.intents.Max(x => x.confidence) > 0.7 && data.Intent != result.intents.OrderByDescending(x => x.confidence).First().intent)
+            if (data != null && result.intents.Count > 0 && result.intents.Max(x => x.confidence) > 0.7 && data.Intent != result.intents.OrderByDescending(x => x.confidence).First().intent)
             {
                 // es gab einen vorherigen intent und der neue intent ist anders + signifikant
                 // lösche den alten Intent
@@ -125,6 +125,34 @@ namespace WebApplication1.Controllers
             if (result.intents[0].intent == "conversation.end")
             {
                 result.context["dialog"] = new Dialog().AddTextPanel("Konnte ich Ihnen helfen?", "p1").AddButton("Ja", "yes").AddButton("Nein", "no").AddTextInput("reason");
+            }
+
+            if (result.intents[0].intent == "intent.with.selection" && result.context.ContainsKey("provideSelection") && query.PressedButton == null)
+            {
+                var values = (Newtonsoft.Json.Linq.JArray)result.context["value"];
+                var dialog = new Dialog();
+                Func<string, string> js = name =>
+                {
+                    if (result.context.ContainsKey("setVariable"))
+                    {
+                        return @"
+
+                            $('a[name=""" + name + @"""]').parent().click(function() {
+                                window.pressedButton='" + name + @"';
+return false;
+                            });";
+                    }
+
+                    return "";
+                };
+
+                values.Select(x => ((Newtonsoft.Json.Linq.JValue)x).Value.ToString()).ToList().ForEach(x => dialog = dialog.AddButton(x, x, js(x)));
+                result.context["dialog"] = dialog;
+            } else if (query.PressedButton != null)
+            {
+                result.context[result.context["setVariable"].ToString()] = query.PressedButton;
+                result.context["system"] = null; // "system" is a NewtoinSoft Json object. ignore it because we do not need it
+                result = new WatsonProvider().Query(query.Text, new List<WatsonAIntent> { new WatsonAIntent { intent = newData.Intent, confidence = 1 } }, result.context.Select(x => new WatsonAEntity{entity = x.Key, value = x.Value?.ToString()}).ToList());
             }
 
             var possibleKey = result.output

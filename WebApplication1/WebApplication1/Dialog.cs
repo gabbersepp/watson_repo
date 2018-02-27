@@ -19,9 +19,9 @@ namespace WebApplication1
             return this;
         }
 
-        public Dialog AddButton(string text, string name)
+        public Dialog AddButton(string text, string name, string js = null)
         {
-            Elements.Add(new Button { Name = name, Text = text });
+            Elements.Add(new Button { Name = name, Text = text, OnClick = js });
             return this;
         }
     }
@@ -47,6 +47,7 @@ namespace WebApplication1
     public class Button : Element
     {
         public string Text;
+        public string OnClick;
 
         public Button() : base("button")
         {

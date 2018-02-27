@@ -22,13 +22,14 @@ function Messages() {
 };
 
 Messages.prototype.handleDisplayOfDialog = function(data) {
-    var dialog = new Dialog();
+    var dialog = new Dialog(this.bot, this);
     $(".messagecontainer .messages").append(dialog.buildHtml(data));
     $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight;
 };
 
 Messages.prototype.send = function() {
     var bot = new Bot();
+    this.bot = bot;
     var query = this.$messagesInput.val();
     this.addOwn(query);
     bot.send(query, this.sessionId, this.processAgentResponse.bind(this));
@@ -66,7 +67,7 @@ Bot.prototype.send = function(text, sessionId, callback) {
         url: "http://localhost:5001/api/watson/Query",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        data: JSON.stringify({text: text, sessionId: sessionId}),
+        data: JSON.stringify({text: text, sessionId: sessionId, pressedButton: window.pressedButton }),
         success: function(data) {
             callback(data);
         },
@@ -80,8 +81,10 @@ Bot.prototype.send = function(text, sessionId, callback) {
     }
 };
 
-function Dialog() {
-
+function Dialog(bot, messages) {
+    this.bot = bot;
+    this.messages = messages;
+    window.dialog = this;
 }
 
 Dialog.prototype.buildHtml = function (data) {
@@ -100,7 +103,8 @@ Dialog.prototype.buildHtml = function (data) {
 };
 
 Dialog.prototype.buildButton = function(button) {
-    return '<div class="element button"><a href>' + button.text + '</a></div>';
+    return '<div class="element button"><a href name="' + button.name + '">' + button.text + '</a></div>' +
+        '<script type="text/javascript">' + button.onClick + '$(\'a[name="' + button.name + '"]\').parent().click((function(){this.bot.send("", this.messages.sessionId, this.messages.processAgentResponse.bind(this.messages))}).bind(window.dialog));window.pressedButton=undefined;</script>';
 };
 
 Dialog.prototype.buildPanel = function(panel) {
@@ -109,4 +113,8 @@ Dialog.prototype.buildPanel = function(panel) {
 
 Dialog.prototype.buildTextInput = function(input) {
     return '<div class="element input"><input type="text" name="' + input.name + '"/></div></div>';
+};
+
+Dialog.prototype.sendQueryOnClick = function() {
+
 };
